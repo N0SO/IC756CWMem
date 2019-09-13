@@ -1,8 +1,21 @@
 #!/usr/bin/python3
 
-from tkinter import *
+import sys
+python_version = sys.version_info[0]
+if (python_version == 2):
+    from Tkinter import *
+    from tkMessageBox import *
+    from tkFileDialog   import askopenfilename
+    #from tkFileDialog   import askdirectory
+    from tkFileDialog   import asksaveasfilename
+else:
+    from tkinter import *
+    from tkinter.messagebox import showinfo
+    from tkinter.filedialog import askopenfilename
+    #from tkinter.filedialog import askdirectory
+    from tkinter.filedialog import asksaveasfilename
+
 from icomCIVUtils import *
-from tkinter.filedialog import *
 
 fields = 'CW Memory #1', \
          'CW Memory #2', \
@@ -10,9 +23,10 @@ fields = 'CW Memory #1', \
          'CW Memory #4'
 MWIN_WIDTH = 55
 
-COMPORT = 'COM3'
+COMPORT = 'com3'
 BAUDRATE = '19200'
 CIVADDR = '6E'
+_VERSION = '0.0.4'
 
 
 class appMain():
@@ -37,7 +51,7 @@ class appMain():
       filemenu.add_command(label="Open", command=(lambda e=ents: self.readfile(e)))
       filemenu.add_command(label="Save", command=(lambda e=ents: self.writefile(e)))
       filemenu.add_separator()
-      filemenu.add_command(label="Configure", command=self.configure)
+      filemenu.add_command(label="configure", command=self.configure)
       filemenu.add_separator()
       filemenu.add_command(label="Exit", command=root.quit)
       menubar.add_cascade(label="File", menu=filemenu)
@@ -48,7 +62,7 @@ class appMain():
       root.mainloop()
         
    def __version__(self):
-      return "0.0.3"
+      return _VERSION
 
    def fetch(self, entries):
       for entry in entries:
@@ -72,12 +86,10 @@ class appMain():
       app = icomCIVUtils(self.port, self.baudrate)
       memno = 1
       for entry in e:
-      	mem1text = app.getrig_cwmemory(app.sport, self.addr, chr(memno+48) )
-#      	app.hexdump(mem1text)
-      	field = entry[0]
-      	entry[1].delete(0,END)
-      	entry[1].insert(0, mem1text)
-      	memno+=1
+        mem1text = app.getrig_cwmemory(app.sport, self.addr, chr(memno+48) )
+        field = entry[0]
+        entry[1].insert(0, mem1text)
+        memno+=1
 #      self.fetch(e)
 
    def writerig(self, e):
@@ -101,7 +113,6 @@ class appMain():
          with open(name,'r') as UseFile:
             for entry in entries:
                text = UseFile.readline()
-               entry[1].delete(0,END)
                entry[1].insert(0,text)
                print('%s' % (text)) 
 
